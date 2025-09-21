@@ -36,3 +36,20 @@
 | ![Sorteo](screenshots/captura-sorteo.png) | **Resultado** – Amigo sorteado |
 | ![Reinicio](screenshots/captura-reinicio.png) | **Reinicio** – Todos los amigos sorteados, juego reiniciado |
 
+---
+
+## 🚀 Cómo Ejecutar
+
+No necesitas clonar el repositorio para probar el juego.  
+Simplemente haz clic aquí para jugar en línea:
+
+👉 **[Jugar Amigo Secreto](https://eduinrodri.github.io/amigo-secreto/)**
+
+---
+
+Si deseas descargarlo para modificarlo localmente:
+
+```bash
+git clone https://github.com/EduinRodri/amigo-secreto.git
+cd amigo-secreto
+# Luego abre index.html en tu navegador
