@@ -1,6 +1,9 @@
 // El principal objetivo de este desafío es fortalecer tus habilidades en lógica de programación. Aquí deberás desarrollar la lógica para resolver el problema.
-let amigos = []; // lista de amigos
-let sorteados = []; // lleva control de los ya escogidos
+let amigos = [];
+let sorteados = [];
+
+// variable que recordará el formato elegido en la primera entrada: solo nombre o nombre y apellido
+let formatoInicial = "";
 
 function validarNombre(nombre) {
   const permitidos = "abcdefghijklmnopqrstuvwxyzáéíóúñ ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÑ";
@@ -10,40 +13,42 @@ function validarNombre(nombre) {
   while (fin >= 0 && nombre[fin] === " ") { fin--; }
   if (fin - inicio + 1 <= 0) { alert("El campo está vacío."); return false; }
 
+  // validar caracteres permitidos
   for (let i = inicio; i <= fin; i++) {
     let c = nombre[i];
     let ok = false;
     for (let j = 0; j < permitidos.length; j++) {
-        if (c === permitidos[j]) { ok = true; break; }
+      if (c === permitidos[j]) { ok = true; break; }
     }
     if (!ok) {
-        alert("No se permiten números ni símbolos. Solo letras (con acentos) y un espacio para el apellido.");
-        return false;
+      alert("No se permiten números ni símbolos.");
+      return false;
     }
   }
 
-
+  // quitar espacios externos
   let limpio = "";
-  for (let k = inicio; k <= fin; k++) { limpio = limpio + nombre[k]; }
+  for (let k = inicio; k <= fin; k++) { limpio += nombre[k]; }
 
-  // Comprobar mayúsculas correctas
+  // separar palabras
   let partes = [];
   let palabra = "";
   for (let p = 0; p < limpio.length; p++) {
     if (limpio[p] === " ") {
       if (palabra !== "") { partes[partes.length] = palabra; palabra = ""; }
     } else {
-      palabra = palabra + limpio[p];
+      palabra += limpio[p];
     }
   }
   if (palabra !== "") { partes[partes.length] = palabra; }
+
+  // máximo 2 palabras
   if (partes.length > 2) { alert("Solo se permite un nombre y un apellido."); return false; }
 
+  // validar mayúsculas y minúsculas
   for (let i = 0; i < partes.length; i++) {
     let w = partes[i];
-    if (w.length === 0) { alert("Espacios extras no permitidos."); return false; }
-    let primera = w[0];
-    if (!(primera >= "A" && primera <= "Z" || "ÁÉÍÓÚÑ".includes(primera))) {
+    if (!(w[0] >= "A" && w[0] <= "Z" || "ÁÉÍÓÚÑ".includes(w[0]))) {
       alert("Cada palabra debe iniciar con mayúscula.");
       return false;
     }
@@ -55,6 +60,22 @@ function validarNombre(nombre) {
       }
     }
   }
+
+  // validar formato de entrada inicial
+  if (formatoInicial === "") {
+    // primera vez: definimos el formato
+    formatoInicial = (partes.length === 1) ? "nombre" : "nombreApellido";
+  } else {
+    if (formatoInicial === "nombre" && partes.length !== 1) {
+      alert("Ya iniciaste solo con nombre. Las demás entradas deben ser solo nombre.");
+      return false;
+    }
+    if (formatoInicial === "nombreApellido" && partes.length !== 2) {
+      alert("Ya iniciaste con nombre y apellido. Las demás entradas deben tener nombre y apellido.");
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -63,9 +84,10 @@ function agregarAmigo() {
   let amigo = input.value;
 
   if (validarNombre(amigo)) {
+    // evitar duplicados exactos
     let repetido = false;
     for (let i = 0; i < amigos.length; i++) {
-      if (amigos[i] === amigo) { repetido = true; }
+      if (amigos[i] === amigo) { repetido = true; break; }
     }
     if (repetido) {
       alert("Ese nombre ya está en la lista.");
@@ -80,9 +102,9 @@ function agregarAmigo() {
 function mostrarLista() {
   let texto = "";
   for (let j = 0; j < amigos.length; j++) {
-    texto = texto + "<li>" + amigos[j] + "</li>";
+    texto += "<li>" + amigos[j] + "</li>";
   }
-  document.getElementById("listaAmigos").innerHTML = texto;
+  document.querySelector("#listaAmigos").innerHTML = texto;
 }
 
 function sortearAmigo() {
@@ -94,18 +116,16 @@ function sortearAmigo() {
     return;
   }
 
-  // Elegir alguien que no se haya sorteado
   let indice = Math.floor(Math.random() * amigos.length);
   let ganador = amigos[indice];
 
-  // Verificar repetición
+  // evitar repetidos en el sorteo
   let ya = false;
   for (let i = 0; i < sorteados.length; i++) {
     if (sorteados[i] === ganador) { ya = true; }
   }
 
   if (ya) {
-    // buscar otro hasta encontrar no repetido
     let intentos = 0;
     while (ya && intentos < amigos.length) {
       indice = Math.floor(Math.random() * amigos.length);
@@ -121,12 +141,12 @@ function sortearAmigo() {
   sorteados[sorteados.length] = ganador;
   ulResultado.innerHTML = "<li>El amigo secreto es: " + ganador + "</li>";
 
-  // Si ya se sortearon todos
   if (sorteados.length === amigos.length) {
     alert("¡Todos los amigos fueron sorteados! Reiniciando el juego.");
     amigos = [];
     sorteados = [];
-    document.getElementById("listaAmigos").innerHTML = "";
-    document.getElementById("resultado").innerHTML = "";
+    formatoInicial = ""; // reiniciar el formato
+    document.querySelector("#listaAmigos").innerHTML = "";
+    document.querySelector("#resultado").innerHTML = "";
   }
 }
